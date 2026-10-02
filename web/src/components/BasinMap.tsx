@@ -26,10 +26,26 @@ export const BasinMap: React.FC<BasinMapProps> = ({
   selectedZoneSlug,
   onSelectZone,
 }) => {
+  const [basemap, setBasemap] = React.useState<'canvas' | 'osm'>('canvas');
+  const [showLayerMenu, setShowLayerMenu] = React.useState(false);
+
   const selectedZone = zones.find((z) => z.slug === selectedZoneSlug) || zones[0];
   const activeAlertsCount = Object.values(predictions).filter(
     (p) => p.alert_level === 'ALERT'
   ).length;
+
+  const cartoKey = (import.meta as unknown as { env: Record<string, string> }).env?.VITE_CARTO_API_KEY;
+
+  let tileUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}';
+  let attribution = 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ';
+
+  if (cartoKey) {
+    tileUrl = `https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?api_key=${cartoKey}`;
+    attribution = '&copy; <a href="https://carto.com/">CARTO</a>';
+  } else if (basemap === 'osm') {
+    tileUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+    attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+  }
 
   return (
     <div className="relative h-[440px] w-full overflow-hidden rounded-2xl border border-slate-200/90 bg-slate-100 shadow-card">
@@ -45,16 +61,41 @@ export const BasinMap: React.FC<BasinMapProps> = ({
         </div>
       </div>
 
-      <div className="absolute right-3 top-3 z-[1000] flex items-center gap-1.5">
+      <div className="absolute right-3 top-3 z-[1000] flex flex-col items-end gap-1">
         <button
-          onClick={() => {
-            // Trigger custom event or re-center
-          }}
-          title="Layer settings"
+          onClick={() => setShowLayerMenu(!showLayerMenu)}
+          title="Switch Basemap"
           className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200/80 bg-white/95 text-slate-700 shadow-md backdrop-blur-md transition-all hover:bg-slate-50"
         >
           <Layers className="h-4 w-4" />
         </button>
+
+        {showLayerMenu && (
+          <div className="mt-1 rounded-xl border border-slate-200 bg-white/95 p-1.5 text-xs shadow-lg backdrop-blur-md">
+            <button
+              onClick={() => {
+                setBasemap('canvas');
+                setShowLayerMenu(false);
+              }}
+              className={`block w-full rounded-md px-2.5 py-1 text-left ${
+                basemap === 'canvas' ? 'bg-sky-50 font-bold text-sky-700' : 'text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              Light Canvas (Clean)
+            </button>
+            <button
+              onClick={() => {
+                setBasemap('osm');
+                setShowLayerMenu(false);
+              }}
+              className={`block w-full rounded-md px-2.5 py-1 text-left ${
+                basemap === 'osm' ? 'bg-sky-50 font-bold text-sky-700' : 'text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              OpenStreetMap (Detailed)
+            </button>
+          </div>
+        )}
       </div>
 
       <MapContainer
@@ -64,8 +105,9 @@ export const BasinMap: React.FC<BasinMapProps> = ({
         className="h-full w-full"
       >
         <TileLayer
-          attribution='&copy; <a href="https://carto.com/">CARTO</a>'
-          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+          key={tileUrl}
+          attribution={attribution}
+          url={tileUrl}
         />
 
         {selectedZone && (
