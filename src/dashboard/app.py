@@ -84,7 +84,7 @@ def main() -> None:
         last_refresh = status_data.get("last_refresh", "unknown")
         freshness = status_data.get("freshness_status", "fresh")
 
-        col_stat1, col_stat2, col_stat3 = st.columns(3)
+        col_stat1, col_stat2, col_stat3 = st.columns([1, 2, 1])
         col_stat1.metric("System Status", status_data.get("status", "unknown").upper())
         col_stat2.metric("Model Version", model_ver)
         col_stat3.metric("Data Freshness", freshness.upper())
@@ -118,14 +118,14 @@ def main() -> None:
 
             # Determine visual style and non-color text labels
             if v_status == "validated":
-                status_text = "[VALIDATED MODEL]"
-                color = [46, 139, 87, 200]  # Sea Green
+                status_text = "[VALIDATED]"
+                color = [46, 139, 87, 210]  # Sea Green
             elif v_status == "provisional":
-                status_text = "[PROVISIONAL MODEL]"
-                color = [218, 165, 32, 200]  # Goldenrod
+                status_text = "[PROVISIONAL]"
+                color = [218, 165, 32, 210]  # Goldenrod
             else:
-                status_text = "[NO VALIDATED MODEL - WEATHER ONLY]"
-                color = [100, 110, 120, 180]  # Slate Gray
+                status_text = "[WEATHER ONLY]"
+                color = [110, 120, 130, 180]  # Slate Gray
 
             score_text = "No score"
             alert_tag = ""
@@ -134,7 +134,11 @@ def main() -> None:
                 score_text = f"Risk Score: {r_score:.4f}"
                 alert_tag = f"[{pred.get('alert_level', 'NORMAL')}]"
                 if pred.get("alert_level") == "ALERT":
-                    color = [220, 20, 60, 220]  # Crimson
+                    color = [220, 20, 60, 230]  # Crimson
+
+            label_text = f"{name} {status_text}"
+            if alert_tag:
+                label_text += f" {alert_tag}"
 
             map_rows.append({
                 "name": name,
@@ -144,16 +148,17 @@ def main() -> None:
                 "status_text": status_text,
                 "score_text": score_text,
                 "alert_tag": alert_tag,
+                "label_text": label_text,
                 "color": color,
-                "radius": 15000 if v_status != "no_validated_model" else 10000
+                "radius": 14000 if v_status != "no_validated_model" else 9000
             })
 
         # Map visualization
         st.subheader("Monitored River Basins")
         map_df = pd.DataFrame(map_rows)
         
-        view_state = pdk.ViewState(latitude=10.0, longitude=76.6, zoom=7, pitch=0)
-        layer = pdk.Layer(
+        view_state = pdk.ViewState(latitude=10.15, longitude=76.6, zoom=7, pitch=0)
+        scatter_layer = pdk.Layer(
             "ScatterplotLayer",
             data=map_df,
             get_position=["lon", "lat"],
@@ -162,8 +167,20 @@ def main() -> None:
             pickable=True,
             auto_highlight=True,
         )
+        text_layer = pdk.Layer(
+            "TextLayer",
+            data=map_df,
+            get_position=["lon", "lat"],
+            get_text="label_text",
+            get_color=[240, 240, 240, 255],
+            get_size=12,
+            get_alignment_baseline="'center'",
+            get_text_anchor="'left'",
+            get_pixel_offset=[18, 0],
+            pickable=False
+        )
         r = pdk.Deck(
-            layers=[layer],
+            layers=[scatter_layer, text_layer],
             initial_view_state=view_state,
             tooltip={"text": "{name}\nStatus: {status_text}\n{score_text} {alert_tag}"}
         )
