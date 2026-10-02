@@ -18,14 +18,14 @@
 ## 3. Pre-2015 Historical Sampling Bias & Positives Undercounting
 - **Schedule Thinning**: Empirical analysis of 16,496 pre-2015 Kallooppara timestamps confirms that **99.73%** of observations were taken strictly at `[8, 13, 18]` IST (08:00, 13:00, 18:00).
 - **Missed Danger Crests**: Controlled thinning tests on 2,036 post-2015 hourly days prove that a 3-reading daily protocol **misses 24.64% of true danger exceedance days** (17 of 69 days missed) and attenuates recorded peak water levels by up to $1.43\text{ meters}$.
-- **Exceedance Rate Disparity**: Thinning explains only part of the 1.79% vs 3.75% rate difference between pre-2015 (1.79% danger days) and post-2015 (3.75% danger days); intensified climate-driven extreme monsoon rainfall post-2018 also contributed significantly.
+- **Exceedance Rate Disparity**: Thinning explains only part of the 1.79% vs 3.75% difference and the rest is unexplained.
 
 ## 4. Unobserved Exceedances Due to Telemetry Outages
 - **Gaps During Floods**: In July 2021, a telemetry sensor dropout on **2021-07-19** directly followed consecutive danger/warning exceedance days on **2021-07-16** ($6.10\text{ m}$), **2021-07-17** ($6.08\text{ m}$), and **2021-07-18** ($5.01\text{ m}$).
 - **Impact**: Some true flood exceedances during extreme events remain unobserved and unrecorded in the benchmark ground truth.
 
 ## 5. Unverified 2026 Alert Blocks
-- **Data Latency**: Most 2026 alert blocks are unverified because 2026 CWC data was unavailable (India-WRIS real-time telemetry for 2026 has not completed official quality-controlled validation). Operational alert dates in 2026 cannot be evaluated against confirmed flood crests.
+- **Data Latency**: Most 2026 alert blocks are unverified because 2026 CWC data was unavailable. Operational alert dates in 2026 cannot be evaluated against confirmed flood crests.
 
 ## 6. Kottayam Basin Provisional Status
 - **Short Telemetry History**: The Kidangoor gauge on the Meenachil River has zero telemetric records prior to June 6, 2015.

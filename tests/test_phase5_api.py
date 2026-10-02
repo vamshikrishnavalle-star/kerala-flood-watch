@@ -245,8 +245,9 @@ def test_nan_input_behavior():
     assert res["alert_level"] is None
 
 
-def test_whatif_bound():
+def test_whatif_bound(mock_daily_weather):
     """Verify what-if extra rain is clamped to slider max and notes saturation."""
+    predict_zone("pathanamthitta_kozhencherry", live_daily=mock_daily_weather)
     res = compute_whatif_sensitivity("pathanamthitta_kozhencherry", extra_rain_mm=500.0)
     assert res["extra_rain_mm_applied"] <= res["slider_max_bound_mm"]
     assert res["slider_max_bound_mm"] <= 152.6
@@ -254,41 +255,42 @@ def test_whatif_bound():
     assert "Score saturates at the training clip bound." in res["saturation_note"]
 
 
-def test_api_endpoints():
-    """Verify all FastAPI REST endpoints return 200 and expected schemas."""
-    # 1. /api/status
-    r = client.get("/api/status")
-    assert r.status_code == 200
-    assert r.json()["model_version"] == MODEL_VERSION
+def test_api_endpoints(mock_daily_weather):
+    """Verify all FastAPI REST endpoints return 200 and expected schemas with mocked weather."""
+    with patch("src.models.inference.fetch_live_weather", return_value=mock_daily_weather):
+        # 1. /api/status
+        r = client.get("/api/status")
+        assert r.status_code == 200
+        assert r.json()["model_version"] == MODEL_VERSION
 
-    # 2. /api/zones
-    r = client.get("/api/zones")
-    assert r.status_code == 200
-    zones = r.json()
-    assert len(zones) == 7
+        # 2. /api/zones
+        r = client.get("/api/zones")
+        assert r.status_code == 200
+        zones = r.json()
+        assert len(zones) == 7
 
-    # 3. /api/predict/pathanamthitta_kozhencherry
-    r = client.get("/api/predict/pathanamthitta_kozhencherry")
-    assert r.status_code == 200
-    assert r.json()["zone_status"] == "validated"
+        # 3. /api/predict/pathanamthitta_kozhencherry
+        r = client.get("/api/predict/pathanamthitta_kozhencherry")
+        assert r.status_code == 200
+        assert r.json()["zone_status"] == "validated"
 
-    # 4. /api/predict/wayanad_vythiri (unvalidated)
-    r = client.get("/api/predict/wayanad_vythiri")
-    assert r.status_code == 200
-    assert r.json()["zone_status"] == "no_validated_model"
-    assert r.json()["risk_score"] is None
+        # 4. /api/predict/wayanad_vythiri (unvalidated)
+        r = client.get("/api/predict/wayanad_vythiri")
+        assert r.status_code == 200
+        assert r.json()["zone_status"] == "no_validated_model"
+        assert r.json()["risk_score"] is None
 
-    # 5. /api/metrics
-    r = client.get("/api/metrics")
-    assert r.status_code == 200
-    assert "precision_recall_audit" in r.json()
+        # 5. /api/metrics
+        r = client.get("/api/metrics")
+        assert r.status_code == 200
+        assert "precision_recall_audit" in r.json()
 
-    # 6. /api/whatif
-    r = client.get("/api/whatif?zone_slug=pathanamthitta_kozhencherry&extra_rain_mm=25.0")
-    assert r.status_code == 200
-    assert r.json()["label"] == "sensitivity analysis"
+        # 6. /api/whatif
+        r = client.get("/api/whatif?zone_slug=pathanamthitta_kozhencherry&extra_rain_mm=25.0")
+        assert r.status_code == 200
+        assert r.json()["label"] == "sensitivity analysis"
 
-    # 7. /api/history
-    r = client.get("/api/history?limit=10")
-    assert r.status_code == 200
-    assert isinstance(r.json(), list)
+        # 7. /api/history
+        r = client.get("/api/history?limit=10")
+        assert r.status_code == 200
+        assert isinstance(r.json(), list)

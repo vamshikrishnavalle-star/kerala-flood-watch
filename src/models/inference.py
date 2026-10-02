@@ -248,7 +248,20 @@ def get_kottayam_reliability_note() -> str:
     total_ev = int(r["total_events"])
     ep_prec = float(r["ep_prec"]) * 100.0
     total_ep = int(r["total_alert_episodes"])
-    fa_days_yr = float(r["fp_days"]) / 6.0
+    dataset_str = str(r["dataset"])
+    parts = dataset_str.split("_")
+    start_year, end_year = int(parts[1]), int(parts[2])
+    n_test_years = float(end_year - start_year + 1)
+    if ZONE_YEAR_CSV_PATH.exists():
+        try:
+            zy_df = pd.read_csv(ZONE_YEAR_CSV_PATH)
+            n_years_zy = len(zy_df[(zy_df["zone"] == "Kottayam") & (zy_df["year"] >= start_year) & (zy_df["year"] <= end_year)])
+            if n_years_zy > 0:
+                n_test_years = float(n_years_zy)
+        except Exception:
+            pass
+
+    fa_days_yr = float(r["fp_days"]) / n_test_years
     return (
         f"PROVISIONAL STATUS: Low sample reliability. Ground-truth CWC telemetry at Kidangoor began "
         f"only in June 2015 (no data for 2000-2014). Holdout evaluation contains only {caught} danger events "
