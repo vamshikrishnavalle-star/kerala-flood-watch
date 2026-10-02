@@ -1,0 +1,44 @@
+# Environment variables
+.env
+
+# Data
+data/
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+
+# Python cache and build
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Testing & Linting
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Model & Database Artifacts
+*.joblib
+*.db
+*.sqlite
+*.sqlite3
+models/

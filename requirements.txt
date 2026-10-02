@@ -1,0 +1,22 @@
+# Web & API
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+python-dotenv
+
+# Database & Scheduling
+sqlalchemy
+apscheduler
+
+# Machine Learning & Data Processing
+numpy
+pandas
+scikit-learn
+xgboost
+shap
+joblib
+
+# Testing
+pytest
+httpx
