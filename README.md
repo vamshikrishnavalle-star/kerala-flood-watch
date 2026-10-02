@@ -1,6 +1,6 @@
-﻿# AI-Powered Disaster Prediction and Emergency Response System
+# AI-Powered Disaster Prediction & Emergency Response System
 
-An AI-driven flood prediction and real-time emergency response platform built with Python 3.11, FastAPI, Machine Learning (XGBoost, SVM, SHAP), and a lightweight interactive web dashboard.
+An AI-driven flood prediction and early warning platform for Kerala river basins built with Python, CWC River Stage Telemetry, Open-Meteo ERA5 Reanalysis, Machine Learning, and an interactive dashboard.
 
 ---
 
@@ -8,107 +8,89 @@ An AI-driven flood prediction and real-time emergency response platform built wi
 
 ```text
 .
-â”œâ”€â”€ .agent/
-â”‚   â”œâ”€â”€ rules/
-â”‚   â”‚   â””â”€â”€ project-rules.md       # Standing project guidelines
-â”‚   â””â”€â”€ workflows/
-â”‚       â”œâ”€â”€ run-checks.md          # /run-checks workflow
-â”‚       â”œâ”€â”€ new-feature.md         # /new-feature workflow
-â”‚       â”œâ”€â”€ report-metrics.md      # /report-metrics workflow
-â”‚       â””â”€â”€ commit-phase.md        # /commit-phase workflow
-â”œâ”€â”€ docs/
-â”‚   â”œâ”€â”€ PRD.md                     # Product Requirements Document
-â”‚   â””â”€â”€ antigravity-implementation-guide.md
-â”œâ”€â”€ data/                          # Raw & processed data (git-ignored)
-â”‚   â”œâ”€â”€ raw/
-â”‚   â””â”€â”€ processed/
-â”œâ”€â”€ notebooks/                     # Exploratory analysis notebooks
-â”œâ”€â”€ scripts/                       # Training, evaluation & simulation scripts
-â”œâ”€â”€ src/
-â”‚   â”œâ”€â”€ __init__.py
-â”‚   â”œâ”€â”€ config.py                  # Pydantic environment configuration loader
-â”‚   â”œâ”€â”€ ingest/                    # Weather & hydrological data ingestion
-â”‚   â”œâ”€â”€ features/                  # Leak-free feature engineering pipeline
-â”‚   â”œâ”€â”€ models/                    # ML models, calibration, and SHAP explainability
-â”‚   â”œâ”€â”€ api/                       # FastAPI application & endpoints
-â”‚   â”œâ”€â”€ alerts/                    # Telegram alert dispatching logic
-â”‚   â””â”€â”€ advisory/                  # Template & LLM advisory generation
-â”œâ”€â”€ web/                           # Dashboard UI (HTML, CSS, Leaflet, Chart.js)
-â”œâ”€â”€ tests/                         # Automated test suite
-â”‚   â”œâ”€â”€ __init__.py
-â”‚   â””â”€â”€ test_health.py             # Phase 0 smoke test
-â”œâ”€â”€ .env.example                   # Environment configuration template
-â”œâ”€â”€ .gitignore
-â”œâ”€â”€ requirements.txt
-â””â”€â”€ README.md
+├── .agent/
+│   ├── rules/
+│   │   └── project-rules.md          # Standing project guidelines
+│   └── workflows/
+│       ├── run-checks.md             # /run-checks workflow
+│       ├── new-feature.md            # /new-feature workflow
+│       ├── report-metrics.md         # /report-metrics workflow
+│       └── commit-phase.md           # /commit-phase workflow
+├── docs/
+│   ├── PRD.md                        # Product Requirements Document
+│   ├── data-notes.md                 # Data provenance, label definitions & caveats
+│   ├── data-audit.md                 # Dataset audit & event-level positives
+│   └── label-sourcing-report.md      # CWC bulletin levels & datum validation
+├── data/                             # Data directory (git-ignored raw binaries)
+│   ├── raw/
+│   │   ├── labels/cwc/               # Raw CWC water level bulletins & series
+│   │   ├── historical/               # ERA5 weather & soil moisture series
+│   │   └── station_zone_map.csv      # Verified gauge-to-district mapping
+│   └── processed/
+│       ├── dataset.parquet           # Clean leak-free training dataset
+│       └── metrics.csv               # Model evaluation metrics matrix
+├── models/                           # Trained ML model artifacts (.joblib)
+├── scripts/                          # Ingestion, audit, training & verification scripts
+│   ├── fetch_data.py                 # Weather data ingestion pipeline
+│   ├── build_step2.py                # Dataset builder
+│   ├── audit_dataset.py              # Dataset validation & cluster audit
+│   └── train_and_evaluate.py         # Leak-free training & holdout evaluation
+├── src/
+│   ├── __init__.py
+│   ├── config.py                     # Pydantic environment configuration
+│   ├── ingest/                       # Weather & hydrological ingestion modules
+│   │   ├── client.py                 # Open-Meteo API client with retry & cache
+│   │   ├── historical.py             # Historical weather extractor
+│   │   └── zones.py                  # Kerala flood zone definitions & coords
+│   ├── features/                     # Feature extraction pipeline
+│   └── models/                       # Model definitions & inference
+└── tests/
+    └── test_dataset.py               # Automated data integrity & leak-prevention tests
 ```
 
 ---
 
-## Getting Started
+## System Overview
 
-### 1. Prerequisites
-- Python 3.11 (or 3.11+)
-- Git
+1. **Hydrological Ground-Truth**:
+   - Official river gauge thresholds from Central Water Commission (CWC) Daily Flood Bulletins.
+   - Verified datum series (`HHS`) for monitored river stations (Kallooppara on Manimala River, Kidangoor on Meenachil River).
+   - Dynamic sampling regime handling (3-readings/day historical vs hourly modern era) with strict NaN dropping and zero synthetic leakage.
 
-### 2. Environment Setup
+2. **Hydrometeorological Feature Pipeline**:
+   - Open-Meteo ERA5 Reanalysis archive (2000–2024 continuous).
+   - Strictly causal $t-1$ features: 1d, 3d, 7d, 14d, 30d rolling rainfall sums, multi-layer soil moisture, and seasonal day-of-year embeddings.
+   - Zero day-$t$ contamination.
 
-#### Create and activate virtual environment
+3. **Machine Learning & Early Warning**:
+   - Temporal holdout evaluation: Train (2000–2018), Test (2019–2024).
+   - Baseline, Logistic Regression, and Class-Weighted Gradient Boosting models.
+   - Evaluated on Danger and Warning thresholds with event-level recall ($[t_{start}-2, t_{end}]$) and false alarm tracking.
 
-**Windows (PowerShell):**
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-```
+---
 
-**Windows (Command Prompt):**
-```cmd
-python -m venv .venv
-.\.venv\Scripts\activate.bat
-```
+## Quickstart
 
-**macOS / Linux:**
+### 1. Environment Setup
 ```bash
-python3 -m venv .venv
+python -m venv .venv
 source .venv/bin/activate
-```
-
-#### Install dependencies
-```bash
-python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### 3. Configure Environment Variables
-Copy `.env.example` to `.env`:
-
-**Windows (PowerShell):**
-```powershell
-Copy-Item .env.example .env
-```
-
-**macOS / Linux:**
+### 2. Run Data Pipeline & Audit
 ```bash
-cp .env.example .env
+python scripts/fetch_data.py --zone pathanamthitta_kozhencherry --start-year 2000 --end-year 2024
+python scripts/fetch_data.py --zone kottayam_pala --start-year 2000 --end-year 2024
+python scripts/audit_dataset.py
 ```
 
-Edit `.env` to configure your settings (e.g. `REGION_NAME`, `ALERT_THRESHOLD`). Never commit `.env` to version control.
-
-### 4. Running the Development Server
+### 3. Run Tests
 ```bash
-uvicorn src.api.main:app --reload --host 127.0.0.1 --port 8000
+pytest tests/ -v
 ```
-- Interactive API Documentation: [http://localhost:8000/docs](http://localhost:8000/docs)
-- Health Check Endpoint: [http://localhost:8000/api/health](http://localhost:8000/api/health)
 
-### 5. Running Tests
+### 4. Train Models & Evaluate
 ```bash
-pytest
+python scripts/train_and_evaluate.py
 ```
-Or for concise output:
-```bash
-pytest -q
-```
-
-
-Note: before running the label script, copy configs/danger_levels.csv to data/raw/labels/cwc/danger_levels_manual.csv. The label script is the final version of an iterative process; earlier versions are in scripts/archive/.
