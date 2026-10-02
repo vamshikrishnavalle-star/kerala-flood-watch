@@ -1,0 +1,4 @@
+zone,station,exceedance_date,exceedance_type,water_level_m
+Pathanamthitta,KALLOOPPARA,2021-07-16,DANGER,6.1
+Pathanamthitta,KALLOOPPARA,2021-07-17,DANGER,6.08
+Pathanamthitta,KALLOOPPARA,2021-07-18,WARNING,5.01

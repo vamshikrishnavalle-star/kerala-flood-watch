@@ -41,5 +41,7 @@ htmlcov/
 *.db
 *.sqlite
 *.sqlite3
-models/
+/models/
+!/models/scorer_v2.json
+!src/models/**
 scripts/strip_paths.py

@@ -1,0 +1,4 @@
+2018 Positives Reconciliation:
+Pathanamthitta: Warning = 26, Danger = 17
+Kottayam:       Warning = 13, Danger = 7
+Pooled Total:   Warning = 39, Danger = 24

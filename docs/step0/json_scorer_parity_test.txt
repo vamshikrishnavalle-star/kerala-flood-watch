@@ -1,0 +1,21 @@
+JSON Scorer Parity Verification Report
+================================================================================
+Source Joblib SHA256: 3089cdac1d8ef3ba7ed165cf01f70f971224d7a68b545ce06520ac1ab501761e
+JSON Scorer Path: models/scorer_v2.json
+
+Parity Results across Full Dataset (N = 12,099 rows):
+- Maximum Absolute Risk Score Difference: 0.00e+00 (< 1e-9 requirement PASSED)
+- Mean Absolute Risk Score Difference: 0.00e+00
+- Warning Flag Concordance: 100.00% (0 mismatches across 12099 rows)
+- Danger Flag Concordance: 100.00% (0 mismatches across 12099 rows)
+
+Holdout Test Period (2019-2024, N = 3,983 rows):
+- Max Absolute Difference: 0.00e+00 (< 1e-9 requirement PASSED)
+- Flag Concordance: 100.00%
+
+Synthetic Boundary Parity:
+- Max Absolute Difference on Extreme Out-of-Bounds Inputs: 0.00e+00
+
+Conclusion:
+The pure JSON scorer (models/scorer_v2.json) perfectly reproduces the joblib model 
+to machine precision (< 1e-9) while eliminating all custom pickling class dependencies.

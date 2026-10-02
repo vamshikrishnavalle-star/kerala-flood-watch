@@ -1,0 +1,13 @@
+Raw Intercept Mathematical Derivation:
+Standardized Intercept (beta0_std): -3.829236
+Sum of (beta_std * mu / sigma): 3.941040
+Calculated Raw Intercept (beta0_raw): -7.770276
+
+Formula:
+logit = beta0_std + sum(beta_std * (X_clipped - mu) / sigma)
+      = [beta0_std - sum(beta_std * mu / sigma)] + sum((beta_std / sigma) * X_clipped)
+      = beta0_raw + sum(beta_raw * X_clipped)
+
+Negative Coefficients Disclosed:
+1. rain_14d: beta_std = -0.3965 (collinear with rain_3d, rain_7d, rain_30d)
+2. soil_0_7_t1: beta_std = -0.5995 (collinear with soil_7_28_t1 which has beta_std = +1.0401)

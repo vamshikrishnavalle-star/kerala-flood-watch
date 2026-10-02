@@ -1,0 +1,4 @@
+zone,train_rows,train_warn_pos,train_dang_pos,test_rows,test_warn_pos,test_dang_pos
+Kottayam,1268,15,7,1903,27,7
+Pathanamthitta,6878,150,62,2080,96,54
+POOLED_TOTAL,8146,165,69,3983,123,61

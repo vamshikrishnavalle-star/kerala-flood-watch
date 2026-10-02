@@ -1,0 +1,54 @@
+Pre-2015 Kallooppara Observation Schedule & Empirical Thinning Test
+================================================================================
+1. Empirical Timestamp Derivation:
+Total Pre-2015 Readings analyzed: 16496
+Hour Distribution (Hours IST):
+hour
+0        2
+1        2
+2        2
+3        2
+4        2
+5        2
+6        2
+7        2
+8     5484
+9        2
+10       2
+11       4
+12       2
+13    5484
+14       2
+15       2
+16       2
+17       2
+18    5484
+19       2
+20       2
+21       2
+22       2
+23       2
+
+Derived Canonical Reading Hours: [8, 13, 18] (08:00, 13:00, 18:00 IST)
+Percentage of pre-2015 readings taken at these 3 hours: 99.73%
+
+2. Thinning Test Results (Post-2015 Hourly Data thinned to [8, 13, 18]):
+Evaluation Period: 2015 to 2024 (Days with >= 18 hourly readings: 2036 days)
+
+Danger Level Exceedances (Threshold = 6.00 m):
+- True Hourly Danger Days: 69 days
+- Caught by 3-Reading Schedule: 52 days (75.36%)
+- Missed Danger Days (Crest occurred between observation windows): 17 days (24.64%)
+
+Warning Level Exceedances (Threshold = 5.00 m):
+- True Hourly Warning Days: 126 days
+- Caught by 3-Reading Schedule: 108 days (85.71%)
+- Missed Warning Days: 18 days (14.29%)
+
+Crest Attenuation on Exceedance Days:
+- Mean Peak Water Level Under-estimation: 0.288 meters
+- Maximum Peak Water Level Under-estimation: 1.430 meters
+
+Conclusion:
+Pre-2015 historical label records suffer from a significant sampling resolution bias: 
+a 3-reading daily protocol misses 24.6% of danger crests and attenuates observed peak water levels by up to 1.43 meters compared to modern telemetric monitoring.

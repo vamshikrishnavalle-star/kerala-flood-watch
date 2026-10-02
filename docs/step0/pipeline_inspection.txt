@@ -1,0 +1,24 @@
+Pipeline and Model Inspection:
+Model Class: ClippedLogisticRegression
+Class Weight: balanced
+Random State: 42
+
+Fitted Pipeline Steps:
+1. Scaler: StandardScaler()
+   - Mean shape: (9,)
+   - Scale shape: (9,)
+2. Classifier: LogisticRegression(class_weight='balanced', max_iter=1000, random_state=42)
+   - Solver: lbfgs
+   - C: 1.0
+   - Max Iter: 1000
+   - Penalty: deprecated
+   - Class Weight: balanced
+
+Calibration Step:
+- CalibratedClassifierCV present: False
+- Platt Scaling present: False
+- Isotonic Regression present: False
+- Calibration Status: RAW UNCALIBRATED SIGMOID SCORES.
+
+Terminology Rule Confirmation:
+- The word 'calibrated' has been completely excised. All outputs are strictly referred to as 'uncalibrated risk scores' between 0.0 and 1.0.

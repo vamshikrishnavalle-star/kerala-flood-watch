@@ -1,0 +1,11 @@
+Dropped / Missing Days within ±3 Days of an Exceedance Event:
+Total occurrences: 8
+
+  Exceedance Date: 2017-09-14 | Dropped NaN Day: 2017-09-11 (Offset: -3 days)
+  Exceedance Date: 2021-07-16 | Dropped NaN Day: 2021-07-17 (Offset: +1 days)
+  Exceedance Date: 2021-07-16 | Dropped NaN Day: 2021-07-18 (Offset: +2 days)
+  Exceedance Date: 2021-07-16 | Dropped NaN Day: 2021-07-19 (Offset: +3 days)
+  Exceedance Date: 2021-07-17 | Dropped NaN Day: 2021-07-18 (Offset: +1 days)
+  Exceedance Date: 2021-07-17 | Dropped NaN Day: 2021-07-19 (Offset: +2 days)
+  Exceedance Date: 2021-07-18 | Dropped NaN Day: 2021-07-17 (Offset: -1 days)
+  Exceedance Date: 2021-07-18 | Dropped NaN Day: 2021-07-19 (Offset: +1 days)
