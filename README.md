@@ -1,6 +1,6 @@
 # AI-Powered Disaster Prediction & Emergency Response System
 
-An empirical AI-driven flood prediction and early warning platform for Kerala river basins built with Python, CWC River Stage Telemetry, Open-Meteo ERA5 Reanalysis, Machine Learning, FastAPI, and an interactive dashboard.
+An empirical AI-driven flood prediction and early warning platform for Kerala river basins built with Python, CWC River Stage Telemetry, Open-Meteo ERA5 Reanalysis, Machine Learning, FastAPI, Streamlit, and a modern high-fidelity React + TypeScript executive dashboard.
 
 ---
 
@@ -15,7 +15,7 @@ An empirical AI-driven flood prediction and early warning platform for Kerala ri
 ### Holdout Test Set Performance (2019–2024, Single-Pass Evaluation)
 
 | Basin / Station | Status | Target | Alert Days | True Pos Days | Day Precision | Caught Events / Total | Event Recall (95% CI) | Alert Episodes | Episode Precision | False Alarm Rate |
-| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | **Pathanamthitta**<br>*(Manimala / Kallooppara)* | **VALIDATED** | Warning | 181 | 62 | 34.25% | 21 / 32 | **65.62%** `[50.0%, 81.2%]` | 57 | 36.84% | 19.8 days/yr |
 | | | Danger | 167 | 40 | 23.95% | 18 / 20 | **90.00%** `[75.0%, 100.0%]` | 57 | 31.58% | 21.2 days/yr |
 | **Kottayam**<br>*(Meenachil / Kidangoor)* | **PROVISIONAL**<br>*(Small Sample)* | Warning | 228 | 26 | 11.40% | 8 / 8 | **100.00%** `[100.0%, 100.0%]` | 59 | 13.56% | 33.7 days/yr |
@@ -63,9 +63,18 @@ An empirical AI-driven flood prediction and early warning platform for Kerala ri
 │   │   └── app.py                    # Streamlit operational early-warning dashboard
 │   └── ingest/
 │       └── zones.py                  # Kerala flood zone definitions & coordinates
+├── web/                              # Modern React 18 + TypeScript + Vite Dashboard
+│   ├── src/
+│   │   ├── components/               # BasinMap, DetailOverview, TimeHorizonOutlook, etc.
+│   │   ├── pages/                    # Operations, Sensitivity, Performance, History
+│   │   ├── services/api.ts           # Axios backend client
+│   │   └── types/api.ts              # Strict TypeScript API schemas
+│   ├── package.json
+│   └── vite.config.ts
 └── tests/
     ├── test_phase5_api.py            # Comprehensive Phase 5 REST API test suite
-    └── test_phase6_dashboard.py      # Phase 6 Streamlit UI validation test suite
+    ├── test_phase6_dashboard.py      # Phase 6 Streamlit UI validation test suite
+    └── conftest.py                   # Network-call blocking fixture
 ```
 
 ---
@@ -87,7 +96,7 @@ The FastAPI service runs on port `8000`:
 
 ## Quickstart
 
-### 1. Install Dependencies
+### 1. Install Backend Dependencies
 ```bash
 pip install -r requirements.txt
 ```
@@ -103,15 +112,26 @@ pytest -v
 uvicorn src.api.main:app --port 8000
 ```
 
-### 4. Launch Streamlit Operations Dashboard
+### 4. Launch Modern React Executive Dashboard (Recommended UI)
 ```bash
 # Terminal 2
+cd web
+npm install
+npm run dev -- --port 3000
+```
+Open your browser to `http://localhost:3000` to access the GeoAether-inspired modern operational dashboard:
+- **Operations Center**: Interactive CartoDB map, pulsing station alert beacons, single ALERT state, trigger explanations, Day 0 causal lag assessment vs. Days 1–3 experimental outlook, and catchment hydrology.
+- **Sensitivity Lab (What-If)**: Bounded rainfall simulation with runtime-clamped sliders and saturation diagnostics.
+- **Performance & Governance**: Complete Step 0 precision-recall audit, Kottayam holdout episode counts (3 of 57 real, 5.26% episode precision), and live rendering of empirical limitations.
+- **Historical Log**: SQLite-persisted inference logs and risk score trajectory visualization.
+
+### 5. Launch Streamlit Operations Dashboard (Alternative UI)
+```bash
+# Terminal 3
 streamlit run src/dashboard/app.py
 ```
-Open your browser to `http://localhost:8501` to access the 4 operational pages:
-1. **Operations**: Real-time 7-basin interactive map, single ALERT state, Day 0 validated vs. Days 1–3 experimental outlook, and unvalidated weather feeds.
-2. **Sensitivity Analysis (What-If)**: Bounded rainfall simulation with runtime-clamped sliders and saturation diagnostics.
-3. **Performance & Limitations**: Complete Step 0 precision-recall audit, Kottayam holdout episode counts (3 of 57 real, 5.26% episode precision), and live rendering of empirical limitations.
-4. **Prediction History**: SQLite-persisted inference logs and risk score trajectory visualization.
+Open your browser to `http://localhost:8501`.
 
-> **Operational Disclaimer**: Every dashboard page displays the mandatory notice: *"Illustrative, not official guidance"*. Scores are uncalibrated continuous risk scores $[0.0, 1.0]$. The words "probability" and "calibrated" are strictly forbidden.
+---
+
+> **Operational Disclaimer**: Every dashboard page and view displays the mandatory notice: *"Illustrative, not official guidance | State and district disaster management authorities issue official alerts."* Scores are uncalibrated continuous risk scores $[0.0, 1.0]$. The words "probability" and "calibrated" are strictly forbidden.

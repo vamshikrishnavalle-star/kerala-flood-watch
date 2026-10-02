@@ -47,3 +47,9 @@ htmlcov/
 **/__pycache__/
 src/models/__pycache__/
 scripts/strip_paths.py
+
+# Frontend Web Build Artifacts
+web/node_modules/
+web/dist/
+web/.vite/
+web/tsconfig.tsbuildinfo
