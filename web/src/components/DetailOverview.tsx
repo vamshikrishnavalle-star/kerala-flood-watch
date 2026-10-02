@@ -1,8 +1,6 @@
 import React from 'react';
 import {
   AlertTriangle,
-  CloudRain,
-  Droplets,
   Info,
   ShieldAlert,
   ShieldCheck,
@@ -169,57 +167,40 @@ export const DetailOverview: React.FC<DetailOverviewProps> = ({
         </div>
       )}
 
-      {/* Causal Weather Feeds */}
+      {/* Causal Weather Feeds (Compact) */}
       {prediction?.weather && (
-        <div className="mt-4">
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-            Observed Antecedent Weather (Through Yesterday t-1)
-          </span>
-          <div className="mt-2 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
-            <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-2.5">
-              <div className="flex items-center gap-1.5 text-slate-500">
-                <CloudRain className="h-3.5 w-3.5 text-sky-600" />
-                <span className="text-[10px] uppercase">Rain 1d (t-1)</span>
-              </div>
-              <p className="mt-1 font-mono text-base font-bold text-slate-900">
-                {prediction.weather.rain_yesterday_mm.toFixed(1)} <span className="text-xs font-normal text-slate-500">mm</span>
+        <div className="mt-3 border-t border-slate-100 pt-2.5">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+              Observed Weather (t-1)
+            </span>
+            <span className="text-[10px] text-slate-400 font-mono">ERA5 Reanalysis</span>
+          </div>
+          <div className="mt-1.5 grid grid-cols-3 gap-2 text-xs">
+            <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-2 text-center">
+              <span className="text-[9px] uppercase text-slate-400 block">Rain 1d (t-1)</span>
+              <p className="mt-0.5 font-mono text-sm font-bold text-slate-900">
+                {prediction.weather.rain_yesterday_mm.toFixed(1)} <span className="text-[9px] font-normal text-slate-500">mm</span>
               </p>
             </div>
 
-            <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-2.5">
-              <div className="flex items-center gap-1.5 text-slate-500">
-                <CloudRain className="h-3.5 w-3.5 text-sky-600" />
-                <span className="text-[10px] uppercase">Rain 3-Day</span>
-              </div>
-              <p className="mt-1 font-mono text-base font-bold text-slate-900">
-                {prediction.weather.rain_3d_sum_mm.toFixed(1)} <span className="text-xs font-normal text-slate-500">mm</span>
+            <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-2 text-center">
+              <span className="text-[9px] uppercase text-slate-400 block">Rain 7-Day</span>
+              <p className="mt-0.5 font-mono text-sm font-bold text-slate-900">
+                {prediction.weather.rain_7d_sum_mm.toFixed(1)} <span className="text-[9px] font-normal text-slate-500">mm</span>
               </p>
             </div>
 
-            <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-2.5">
-              <div className="flex items-center gap-1.5 text-slate-500">
-                <CloudRain className="h-3.5 w-3.5 text-sky-600" />
-                <span className="text-[10px] uppercase">Rain 7-Day</span>
-              </div>
-              <p className="mt-1 font-mono text-base font-bold text-slate-900">
-                {prediction.weather.rain_7d_sum_mm.toFixed(1)} <span className="text-xs font-normal text-slate-500">mm</span>
-              </p>
-            </div>
-
-            <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-2.5">
-              <div className="flex items-center gap-1.5 text-slate-500">
-                <Droplets className="h-3.5 w-3.5 text-blue-600" />
-                <span className="text-[10px] uppercase">Topsoil Sat.</span>
-              </div>
-              <p className="mt-1 font-mono text-base font-bold text-slate-900">
-                {prediction.weather.soil_moisture_0_7cm.toFixed(3)}{' '}
-                <span className="text-[10px] font-normal text-slate-400">m³/m³</span>
+            <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-2 text-center">
+              <span className="text-[9px] uppercase text-slate-400 block">Topsoil Sat.</span>
+              <p className="mt-0.5 font-mono text-sm font-bold text-slate-900">
+                {prediction.weather.soil_moisture_0_7cm.toFixed(3)}
               </p>
             </div>
           </div>
           {zone.zone_status === 'no_validated_model' && (
-            <p className="mt-2 text-[10px] italic text-slate-400">
-              No risk score, placeholder, or risk color is computed for unvalidated basins.
+            <p className="mt-1.5 text-[10px] italic text-slate-400">
+              No risk score or alert color computed for unvalidated basins.
             </p>
           )}
         </div>

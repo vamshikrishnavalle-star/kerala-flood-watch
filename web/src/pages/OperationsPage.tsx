@@ -67,26 +67,59 @@ export const OperationsPage: React.FC<OperationsPageProps> = ({
               onLaunchSensitivity={onNavigateToWhatIf}
             />
 
-            {/* Risk Score Dynamics Card */}
-            <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-card transition-all hover:shadow-elevated">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            {/* Risk Score Dynamics or Basin Telemetry Profile */}
+            <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-card transition-all hover:shadow-elevated">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
                 <div className="flex items-center gap-2">
                   <TrendingUp className="h-4 w-4 text-sky-600" />
                   <h3 className="text-sm font-semibold tracking-tight text-slate-900">
-                    Risk Score Trajectory
+                    {selectedZone.zone_status === 'no_validated_model'
+                      ? 'Basin Telemetry Profile'
+                      : 'Risk Score Trajectory'}
                   </h3>
                 </div>
                 <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600">
-                  Logged Inferences
+                  {selectedZone.zone_status === 'no_validated_model' ? 'ERA5 + CWC Station' : 'Logged Inferences'}
                 </span>
               </div>
 
-              {basinHistory.length > 0 ? (
-                <div className="mt-3.5 h-44 w-full">
+              {selectedZone.zone_status === 'no_validated_model' ? (
+                /* Rich Telemetry & Catchment Profile for Unvalidated Basins */
+                <div className="mt-3 space-y-2.5 text-xs">
+                  <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-2.5">
+                    <div className="flex items-center justify-between text-slate-600">
+                      <span className="text-[10px] font-semibold uppercase text-slate-400">River Basin</span>
+                      <strong className="text-slate-800">{selectedZone.river_basin}</strong>
+                    </div>
+                    <div className="mt-1 flex items-center justify-between text-slate-600">
+                      <span className="text-[10px] font-semibold uppercase text-slate-400">Monitoring Station</span>
+                      <strong className="text-slate-800 font-mono text-[11px]">{selectedZone.name}</strong>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-center">
+                    <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-2">
+                      <span className="text-[9px] font-semibold uppercase text-slate-400 block">Operational Tier</span>
+                      <span className="font-bold text-slate-700 text-xs mt-0.5 inline-block">Weather Only</span>
+                    </div>
+                    <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-2">
+                      <span className="text-[9px] font-semibold uppercase text-slate-400 block">ERA5 Grid</span>
+                      <span className="font-mono text-xs font-semibold text-slate-700 mt-0.5 inline-block">
+                        {selectedZone.latitude.toFixed(2)}°N, {selectedZone.longitude.toFixed(2)}°E
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="rounded-lg bg-amber-50/80 border border-amber-200/80 px-2.5 py-1.5 text-[10px] text-amber-800">
+                    Continuous weather monitoring active. Risk scoring suppressed per pre-registered validation protocol.
+                  </div>
+                </div>
+              ) : basinHistory.length > 0 ? (
+                <div className="mt-2.5 h-40 w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart
                       data={basinHistory}
-                      margin={{ top: 8, right: 10, left: -25, bottom: 0 }}
+                      margin={{ top: 6, right: 10, left: -25, bottom: 0 }}
                     >
                       <defs>
                         <linearGradient id="scoreGrad" x1="0" y1="0" x2="0" y2="1">
@@ -97,13 +130,13 @@ export const OperationsPage: React.FC<OperationsPageProps> = ({
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                       <XAxis
                         dataKey="step"
-                        tick={{ fontSize: 10, fill: '#64748b' }}
+                        tick={{ fontSize: 9, fill: '#64748b' }}
                         axisLine={false}
                         tickLine={false}
                       />
                       <YAxis
                         domain={[0, 1]}
-                        tick={{ fontSize: 10, fill: '#94a3b8' }}
+                        tick={{ fontSize: 9, fill: '#94a3b8' }}
                         axisLine={false}
                         tickLine={false}
                       />
@@ -129,10 +162,10 @@ export const OperationsPage: React.FC<OperationsPageProps> = ({
                   </ResponsiveContainer>
                 </div>
               ) : (
-                <div className="flex h-44 flex-col items-center justify-center text-center text-xs text-slate-400">
-                  <p>Continuous inference logging active.</p>
+                <div className="flex h-40 flex-col items-center justify-center text-center text-xs text-slate-400">
+                  <p>Inference logging initialized.</p>
                   <p className="mt-1 text-[11px] text-slate-400">
-                    Live risk score trajectory will chart as inferences stream in.
+                    Live risk trajectory will chart as inferences stream in.
                   </p>
                 </div>
               )}

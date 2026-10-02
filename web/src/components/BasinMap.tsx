@@ -48,7 +48,7 @@ export const BasinMap: React.FC<BasinMapProps> = ({
   }
 
   return (
-    <div className="relative h-[440px] w-full overflow-hidden rounded-2xl border border-slate-200/90 bg-slate-100 shadow-card">
+    <div className="relative h-[400px] xl:h-[420px] w-full overflow-hidden rounded-2xl border border-slate-200/90 bg-slate-100 shadow-card">
       {/* Floating Map Controls & Alert Pill */}
       <div className="absolute left-3 top-3 z-[1000] flex items-center gap-2">
         <div className="flex items-center gap-1.5 rounded-full border border-amber-200/80 bg-white/95 px-3 py-1 text-xs font-semibold text-amber-800 shadow-md backdrop-blur-md">
