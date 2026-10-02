@@ -59,10 +59,13 @@ An empirical AI-driven flood prediction and early warning platform for Kerala ri
 │   │   └── inference.py              # Operational inference engine (loads scorer_v2.json)
 │   ├── api/
 │   │   └── main.py                   # FastAPI REST backend application
+│   ├── dashboard/
+│   │   └── app.py                    # Streamlit operational early-warning dashboard
 │   └── ingest/
 │       └── zones.py                  # Kerala flood zone definitions & coordinates
 └── tests/
-    └── test_phase5_api.py            # Comprehensive Phase 5 test suite
+    ├── test_phase5_api.py            # Comprehensive Phase 5 REST API test suite
+    └── test_phase6_dashboard.py      # Phase 6 Streamlit UI validation test suite
 ```
 
 ---
@@ -89,12 +92,26 @@ The FastAPI service runs on port `8000`:
 pip install -r requirements.txt
 ```
 
-### 2. Run Test Suite
+### 2. Run Test Suite (All 35 System & Dashboard Tests)
 ```bash
-pytest tests/test_phase5_api.py -v
+pytest -v
 ```
 
-### 3. Launch FastAPI Server
+### 3. Launch Operational FastAPI Backend
 ```bash
-uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
+# Terminal 1
+uvicorn src.api.main:app --port 8000
 ```
+
+### 4. Launch Streamlit Operations Dashboard
+```bash
+# Terminal 2
+streamlit run src/dashboard/app.py
+```
+Open your browser to `http://localhost:8501` to access the 4 operational pages:
+1. **Operations**: Real-time 7-basin interactive map, single ALERT state, Day 0 validated vs. Days 1–3 experimental outlook, and unvalidated weather feeds.
+2. **Sensitivity Analysis (What-If)**: Bounded rainfall simulation with runtime-clamped sliders and saturation diagnostics.
+3. **Performance & Limitations**: Complete Step 0 precision-recall audit, Kottayam holdout episode counts (3 of 57 real, 5.26% episode precision), and live rendering of empirical limitations.
+4. **Prediction History**: SQLite-persisted inference logs and risk score trajectory visualization.
+
+> **Operational Disclaimer**: Every dashboard page displays the mandatory notice: *"Illustrative, not official guidance"*. Scores are uncalibrated continuous risk scores $[0.0, 1.0]$. The words "probability" and "calibrated" are strictly forbidden.

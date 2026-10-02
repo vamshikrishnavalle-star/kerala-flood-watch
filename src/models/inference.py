@@ -258,8 +258,9 @@ def get_kottayam_reliability_note() -> str:
             n_years_zy = len(zy_df[(zy_df["zone"] == "Kottayam") & (zy_df["year"] >= start_year) & (zy_df["year"] <= end_year)])
             if n_years_zy > 0:
                 n_test_years = float(n_years_zy)
-        except Exception:
-            pass
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).warning(f"Failed to read test years from {ZONE_YEAR_CSV_PATH}: {e}")
 
     fa_days_yr = float(r["fp_days"]) / n_test_years
     return (
@@ -285,6 +286,21 @@ def predict_zone(
 
     # Weather-only zones: no risk score is ever computed
     if status_tag == "no_validated_model":
+        weather_obs = None
+        try:
+            daily = live_daily if live_daily is not None else fetch_live_weather(zone.latitude, zone.longitude, client)
+            f_d0 = extract_features_from_daily(daily, target_day_idx=92)
+            if f_d0:
+                weather_obs = {
+                    "rain_yesterday_mm": f_d0["rain_1d"],
+                    "rain_3d_sum_mm": f_d0["rain_3d"],
+                    "rain_7d_sum_mm": f_d0["rain_7d"],
+                    "soil_moisture_0_7cm": f_d0["soil_0_7_t1"],
+                    "soil_moisture_7_28cm": f_d0["soil_7_28_t1"]
+                }
+        except Exception:
+            pass
+
         res = {
             "zone_slug": slug,
             "zone_name": zone.name,
@@ -296,6 +312,7 @@ def predict_zone(
             "warning_flag": None,
             "danger_flag": None,
             "alert_level": None,
+            "weather": weather_obs,
             "data_as_of": now_iso,
             "model_version": MODEL_VERSION
         }

@@ -294,3 +294,12 @@ def test_api_endpoints(mock_daily_weather):
         r = client.get("/api/history?limit=10")
         assert r.status_code == 200
         assert isinstance(r.json(), list)
+
+
+def test_network_block_enforced():
+    """Verify that any attempt to establish a real external socket connection is blocked."""
+    import socket
+    with pytest.raises(RuntimeError, match="Live network access blocked by test suite"):
+        s = socket.socket()
+        s.connect(("8.8.8.8", 53))
+
