@@ -42,3 +42,4 @@ htmlcov/
 *.sqlite
 *.sqlite3
 models/
+scripts/strip_paths.py
