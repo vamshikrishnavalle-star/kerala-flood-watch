@@ -18,6 +18,127 @@ API_BASE_URL = os.environ.get("API_BASE_URL", "http://127.0.0.1:8000")
 ROOT_DIR = pathlib.Path(__file__).resolve().parent.parent.parent
 LIMITATIONS_MD_PATH = ROOT_DIR / "docs" / "step0" / "limitations.md"
 
+CUSTOM_CSS = """
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+    html, body, [class*="css"] {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    .block-container {
+        padding-top: 1.5rem;
+        padding-bottom: 3.5rem;
+        max-width: 1350px;
+    }
+
+    /* KPI and Metric Cards */
+    [data-testid="stMetric"] {
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.45) 0%, rgba(15, 23, 42, 0.65) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 14px 18px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(10px);
+    }
+
+    [data-testid="stMetricValue"] {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 1.8rem !important;
+        font-weight: 600 !important;
+        color: #F8FAFC !important;
+    }
+
+    [data-testid="stMetricLabel"] {
+        font-size: 0.85rem !important;
+        color: #94A3B8 !important;
+        font-weight: 500 !important;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    /* Card Panels */
+    .glass-card {
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.5) 0%, rgba(15, 23, 42, 0.7) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 18px 22px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+        backdrop-filter: blur(10px);
+        margin-bottom: 16px;
+    }
+
+    /* Custom Status Badges */
+    .badge-pill {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+    .badge-validated {
+        background: rgba(16, 185, 129, 0.15);
+        color: #34D399;
+        border: 1px solid rgba(52, 211, 153, 0.35);
+    }
+    .badge-provisional {
+        background: rgba(245, 158, 11, 0.15);
+        color: #FBBF24;
+        border: 1px solid rgba(251, 191, 36, 0.35);
+    }
+    .badge-weather {
+        background: rgba(100, 116, 139, 0.15);
+        color: #94A3B8;
+        border: 1px solid rgba(148, 163, 184, 0.35);
+    }
+
+    /* Alert Banner Pulse */
+    .alert-card-active {
+        background: linear-gradient(135deg, rgba(220, 38, 38, 0.18) 0%, rgba(153, 27, 27, 0.28) 100%);
+        border: 1px solid rgba(239, 68, 68, 0.45);
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 0 25px rgba(239, 68, 68, 0.25);
+    }
+
+    .alert-card-normal {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(5, 150, 105, 0.2) 100%);
+        border: 1px solid rgba(16, 185, 129, 0.35);
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.15);
+    }
+
+    /* Clean Dividers */
+    hr {
+        border-color: rgba(255, 255, 255, 0.08) !important;
+        margin: 1.5rem 0 !important;
+    }
+
+    /* Headings */
+    h1, h2, h3, h4 {
+        letter-spacing: -0.02em;
+        font-weight: 700;
+        color: #F8FAFC;
+    }
+
+    /* Sidebar Background */
+    [data-testid="stSidebar"] {
+        background-color: #0b1120 !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    /* Dataframe rounded border */
+    [data-testid="stDataFrame"] {
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+</style>
+"""
+
 
 def get_api_data(endpoint: str, params: Optional[Dict[str, Any]] = None) -> Optional[Any]:
     """Fetch JSON payload from backend API with robust timeout and error handling."""
@@ -35,10 +156,10 @@ def render_footer() -> None:
     """Render mandatory public disclaimer footer on every page."""
     st.markdown("---")
     st.markdown(
-        "<p style='text-align: center; color: #888888; font-size: 0.9rem;'>"
+        "<div style='text-align: center; color: #888888; font-size: 0.88rem; padding: 10px 0;'>"
         "<strong>Illustrative, not official guidance</strong> | "
         "State and district disaster management authorities issue official alerts."
-        "</p>",
+        "</div>",
         unsafe_allow_html=True
     )
 
@@ -52,7 +173,10 @@ def main() -> None:
         initial_sidebar_state="expanded"
     )
 
-    # Sidebar Navigation
+    # Inject Custom Executive Theme
+    st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
+
+    # Sidebar Navigation & Branding
     st.sidebar.title("🌊 Flood Early Warning")
     st.sidebar.caption("Operational Hydrological Decision Support System")
 
@@ -60,6 +184,16 @@ def main() -> None:
         "Navigation",
         ["1. Operations", "2. Sensitivity Analysis (What-If)", "3. Performance & Limitations", "4. Prediction History"],
         index=0
+    )
+
+    st.sidebar.markdown("---")
+    st.sidebar.markdown(
+        "<div style='font-size: 0.78rem; color: #64748B;'>"
+        "<strong>Kerala FEWS</strong> v2.0<br>"
+        "CWC Telemetry & ERA5 Reanalysis<br>"
+        "Decision Boundary: Causal Lag <i>t-1</i>"
+        "</div>",
+        unsafe_allow_html=True
     )
 
     # -----------------------------------------------------------------------------
@@ -85,9 +219,12 @@ def main() -> None:
         freshness = status_data.get("freshness_status", "fresh")
 
         col_stat1, col_stat2, col_stat3 = st.columns([1, 2, 1])
-        col_stat1.metric("System Status", status_data.get("status", "unknown").upper())
-        col_stat2.metric("Model Version", model_ver)
-        col_stat3.metric("Data Freshness", freshness.upper())
+        with col_stat1:
+            col_stat1.metric("System Status", status_data.get("status", "unknown").upper())
+        with col_stat2:
+            col_stat2.metric("Model Version", model_ver)
+        with col_stat3:
+            col_stat3.metric("Data Freshness", freshness.upper())
 
         if freshness == "stale":
             st.warning(
@@ -177,6 +314,9 @@ def main() -> None:
             get_alignment_baseline="'center'",
             get_text_anchor="'left'",
             get_pixel_offset=[18, 0],
+            background=True,
+            get_background_color=[15, 23, 42, 220],
+            background_padding=[4, 6],
             pickable=False
         )
         r = pdk.Deck(
@@ -209,6 +349,13 @@ def main() -> None:
             return
 
         v_status = zone_info["zone_status"]
+
+        # Basin Metadata Header Cards
+        meta1, meta2, meta3, meta4 = st.columns(4)
+        meta1.markdown(f"**District**: `{zone_info.get('district', 'N/A')}`")
+        meta2.markdown(f"**River Basin**: `{zone_info.get('river_basin', 'N/A')}`")
+        meta3.markdown(f"**Hydrology**: `{str(zone_info.get('hydrological_type', 'N/A')).replace('_', ' ').title()}`")
+        meta4.markdown(f"**Coordinates**: `{zone_info.get('latitude', 0.0):.4f}°N, {zone_info.get('longitude', 0.0):.4f}°E`")
 
         # Zone Status Badges & Specific Banners
         if v_status == "validated":
@@ -380,69 +527,80 @@ def main() -> None:
             return
 
         audit_records = metrics_data.get("precision_recall_audit", [])
-        if audit_records:
-            st.subheader("Authoritative Precision-Recall Audit")
-            st.caption("Rule: Precision, event counts, alert episodes, and false-alarm days are displayed beside every recall figure.")
-
-            audit_df = pd.DataFrame(audit_records)
-            display_rows = []
-            for _, r in audit_df.iterrows():
-                c_ev = r.get("caught_events")
-                t_ev = r.get("total_events")
-                r_ep = r.get("tp_days")
-                tot_ep = r.get("total_alert_episodes")
-                
-                ev_str = f"{c_ev} / {t_ev} ({r.get('event_rec', 0.0)*100:.1f}%)" if c_ev is not None and t_ev is not None else "N/A"
-                ep_prec_str = f"{r.get('ep_prec', 0.0)*100:.2f}% ({tot_ep} episodes)" if tot_ep is not None else "N/A"
-                fa_days_str = f"{r.get('fp_days', 0)} days"
-
-                display_rows.append({
-                    "Dataset Split": r.get("dataset"),
-                    "Basin / Zone": r.get("zone"),
-                    "Target Level": r.get("target"),
-                    "Threshold": r.get("threshold"),
-                    "Event Recall (Caught / Total)": ev_str,
-                    "Day Recall": f"{r.get('day_rec', 0.0)*100:.1f}%",
-                    "Day Precision": f"{r.get('day_prec', 0.0)*100:.2f}%",
-                    "Episode Precision (Total Alerts)": ep_prec_str,
-                    "False-Alarm Days": fa_days_str
-                })
-
-            st.dataframe(pd.DataFrame(display_rows), use_container_width=True)
-            kott_recs = [
-                r for r in audit_records
-                if str(r.get("zone", "")).lower() == "kottayam" and str(r.get("target", "")).lower() == "danger"
-            ]
-            if kott_recs:
-                kr = kott_recs[0]
-                k_caught = kr.get("caught_events")
-                k_tot_ev = kr.get("total_events")
-                k_tot_ep = kr.get("total_alert_episodes")
-                k_ep_prec = float(kr.get("ep_prec", 0.0)) * 100
-                k_rec = float(kr.get("event_rec", 0.0)) * 100
-                st.caption(
-                    f"Note on Kottayam holdout: With {k_caught} true danger events ({k_rec:.1f}% caught of {k_tot_ev}), "
-                    f"there are {k_tot_ep} total alert episodes ({k_caught} of {k_tot_ep} real, {k_ep_prec:.2f}% episode precision). "
-                    "Counts must be evaluated alongside percentages."
-                )
-            else:
-                st.caption("Counts must be evaluated alongside percentages across all basin evaluations.")
-
-        # Annual Data Availability
         zone_year_records = metrics_data.get("dataset_per_zone_year", [])
-        if zone_year_records:
-            with st.expander("Annual Ground-Truth Data Availability (2000–2024)"):
-                st.dataframe(pd.DataFrame(zone_year_records), use_container_width=True)
 
-        # Render limitations markdown
-        st.markdown("---")
-        st.subheader("Empirical System Limitations (docs/step0/limitations.md)")
-        if LIMITATIONS_MD_PATH.exists():
-            with open(LIMITATIONS_MD_PATH, "r", encoding="utf-8") as f:
-                limitations_text = f.read()
-            st.markdown(limitations_text)
-        else:
-            st.warning("Limitations report markdown file not found on server disk.")
+        tab_audit, tab_avail, tab_limits = st.tabs([
+            "📊 Precision-Recall Audit",
+            "📅 Annual Data Coverage (2000–2024)",
+            "⚠️ Empirical System Limitations"
+        ])
+
+        with tab_audit:
+            if audit_records:
+                st.subheader("Authoritative Precision-Recall Audit")
+                st.caption("Rule: Precision, event counts, alert episodes, and false-alarm days are displayed beside every recall figure.")
+
+                audit_df = pd.DataFrame(audit_records)
+                display_rows = []
+                for _, r in audit_df.iterrows():
+                    c_ev = r.get("caught_events")
+                    t_ev = r.get("total_events")
+                    r_ep = r.get("tp_days")
+                    tot_ep = r.get("total_alert_episodes")
+                    
+                    ev_str = f"{c_ev} / {t_ev} ({r.get('event_rec', 0.0)*100:.1f}%)" if c_ev is not None and t_ev is not None else "N/A"
+                    ep_prec_str = f"{r.get('ep_prec', 0.0)*100:.2f}% ({tot_ep} episodes)" if tot_ep is not None else "N/A"
+                    fa_days_str = f"{r.get('fp_days', 0)} days"
+
+                    display_rows.append({
+                        "Dataset Split": r.get("dataset"),
+                        "Basin / Zone": r.get("zone"),
+                        "Target Level": r.get("target"),
+                        "Threshold": r.get("threshold"),
+                        "Event Recall (Caught / Total)": ev_str,
+                        "Day Recall": f"{r.get('day_rec', 0.0)*100:.1f}%",
+                        "Day Precision": f"{r.get('day_prec', 0.0)*100:.2f}%",
+                        "Episode Precision (Total Alerts)": ep_prec_str,
+                        "False-Alarm Days": fa_days_str
+                    })
+
+                st.dataframe(pd.DataFrame(display_rows), use_container_width=True)
+                kott_recs = [
+                    r for r in audit_records
+                    if str(r.get("zone", "")).lower() == "kottayam" and str(r.get("target", "")).lower() == "danger"
+                ]
+                if kott_recs:
+                    kr = kott_recs[0]
+                    k_caught = kr.get("caught_events")
+                    k_tot_ev = kr.get("total_events")
+                    k_tot_ep = kr.get("total_alert_episodes")
+                    k_ep_prec = float(kr.get("ep_prec", 0.0)) * 100
+                    k_rec = float(kr.get("event_rec", 0.0)) * 100
+                    st.caption(
+                        f"Note on Kottayam holdout: With {k_caught} true danger events ({k_rec:.1f}% caught of {k_tot_ev}), "
+                        f"there are {k_tot_ep} total alert episodes ({k_caught} of {k_tot_ep} real, {k_ep_prec:.2f}% episode precision). "
+                        "Counts must be evaluated alongside percentages."
+                    )
+                else:
+                    st.caption("Counts must be evaluated alongside percentages across all basin evaluations.")
+            else:
+                st.write("No audit metrics available.")
+
+        with tab_avail:
+            if zone_year_records:
+                st.subheader("Annual Ground-Truth Data Availability (2000–2024)")
+                st.dataframe(pd.DataFrame(zone_year_records), use_container_width=True)
+            else:
+                st.write("Annual data availability breakdown unavailable.")
+
+        with tab_limits:
+            st.subheader("Empirical System Limitations (docs/step0/limitations.md)")
+            if LIMITATIONS_MD_PATH.exists():
+                with open(LIMITATIONS_MD_PATH, "r", encoding="utf-8") as f:
+                    limitations_text = f.read()
+                st.markdown(limitations_text)
+            else:
+                st.warning("Limitations report markdown file not found on server disk.")
 
     # -----------------------------------------------------------------------------
     # PAGE 4: HISTORY
