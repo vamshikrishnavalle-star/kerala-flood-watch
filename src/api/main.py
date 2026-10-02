@@ -29,6 +29,8 @@ from src.models.inference import (
 
 # Start time tracking for uptime
 APP_START_TIME = datetime.now(timezone.utc)
+# Background Scheduler configuration (default True, disabled in unit tests via ENABLE_SCHEDULER=false)
+ENABLE_SCHEDULER: bool = os.environ.get("ENABLE_SCHEDULER", "true").lower() in ("true", "1", "yes")
 scheduler = BackgroundScheduler()
 
 
@@ -36,8 +38,6 @@ def refresh_predictions_job() -> None:
     """Scheduled background job to refresh live predictions every 45 minutes."""
     global _LAST_REFRESH_TIME
     _LAST_REFRESH_TIME = datetime.now(timezone.utc)
-    if os.environ.get("TESTING") == "1" or os.environ.get("PYTEST_CURRENT_TEST"):
-        return
     for slug in ["pathanamthitta_kozhencherry", "kottayam_pala"]:
         try:
             predict_zone(slug)
@@ -48,10 +48,11 @@ def refresh_predictions_job() -> None:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Lifespan context manager for background scheduler."""
-    # Pre-populate prediction cache on startup if not in testing mode
-    is_testing = bool(os.environ.get("TESTING") == "1" or os.environ.get("PYTEST_CURRENT_TEST"))
-    if not is_testing:
-        refresh_predictions_job()
+    if ENABLE_SCHEDULER:
+        try:
+            refresh_predictions_job()
+        except Exception:
+            pass
         scheduler.add_job(refresh_predictions_job, "interval", minutes=45, id="weather_refresh")
         scheduler.start()
     yield

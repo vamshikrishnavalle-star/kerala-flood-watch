@@ -4,6 +4,9 @@ All network calls are strictly mocked or use local saved data.
 Zero usage of the words 'probability' or 'calibrated'.
 """
 
+import os
+os.environ["ENABLE_SCHEDULER"] = "false"
+
 import json
 import math
 import pathlib
@@ -154,7 +157,12 @@ def test_stale_data_behavior(mock_daily_weather):
 
 
 def test_live_pipeline_reproduces_offline_scores_5_dates():
-    """Verify live inference reproduces stored offline dataset scores for 5 past dates."""
+    """Regression check against stored offline model output (not holdout validation).
+    
+    Note: 2018-08-16 is strictly in-sample (training period 2000-2018).
+    The remaining 4 dates (2019-08-09, 2020-09-20, 2021-07-16, 2024-07-30) are from the holdout period.
+    This test verifies that live inference reproduces the exact offline model outputs.
+    """
     sample_json_path = ROOT_DIR / "tests" / "sample_5_past_dates.json"
     assert sample_json_path.exists(), f"Missing {sample_json_path}"
     with open(sample_json_path, "r", encoding="utf-8") as f:

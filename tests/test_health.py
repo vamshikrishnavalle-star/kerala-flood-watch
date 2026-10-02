@@ -1,5 +1,8 @@
 """Smoke test for the API health check endpoint."""
 
+import os
+os.environ["ENABLE_SCHEDULER"] = "false"
+
 from fastapi.testclient import TestClient
 from src.api.main import app
 

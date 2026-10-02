@@ -236,31 +236,24 @@ def get_zone_validation_status(slug: str) -> str:
 
 
 def get_kottayam_reliability_note() -> str:
-    """Compute dynamic reliability note for Kottayam from saved audit metrics."""
-    if METRICS_CSV_PATH.exists():
-        try:
-            df = pd.read_csv(METRICS_CSV_PATH)
-            row = df[(df["dataset"] == "HOLDOUT_2019_2024") & (df["zone"] == "Kottayam") & (df["target"] == "danger")]
-            if len(row) > 0:
-                r = row.iloc[0]
-                caught = int(r["caught_events"])
-                total_ev = int(r["total_events"])
-                ep_prec = float(r["ep_prec"]) * 100.0
-                total_ep = int(r["total_alert_episodes"])
-                fa_days_yr = float(r["fp_days"]) / 6.0
-                return (
-                    f"PROVISIONAL STATUS: Low sample reliability. Ground-truth CWC telemetry at Kidangoor began "
-                    f"only in June 2015 (no data for 2000-2014). Holdout evaluation contains only {caught} danger events "
-                    f"({caught} of {total_ep} danger-alert episodes real in the test years) with an episode-level precision of {ep_prec:.2f}% "
-                    f"and {fa_days_yr:.1f} false-alarm days/year. Scores must be interpreted with caution."
-                )
-        except Exception:
-            pass
+    """Compute dynamic reliability note for Kottayam directly from saved audit metrics CSV."""
+    if not METRICS_CSV_PATH.exists():
+        raise FileNotFoundError(f"Authoritative metrics audit file not found at {METRICS_CSV_PATH}")
+    df = pd.read_csv(METRICS_CSV_PATH)
+    row = df[(df["dataset"] == "HOLDOUT_2019_2024") & (df["zone"] == "Kottayam") & (df["target"] == "danger")]
+    if len(row) == 0:
+        raise ValueError("Kottayam holdout danger metrics not found in audit file.")
+    r = row.iloc[0]
+    caught = int(r["caught_events"])
+    total_ev = int(r["total_events"])
+    ep_prec = float(r["ep_prec"]) * 100.0
+    total_ep = int(r["total_alert_episodes"])
+    fa_days_yr = float(r["fp_days"]) / 6.0
     return (
-        "PROVISIONAL STATUS: Low sample reliability. Ground-truth CWC telemetry at Kidangoor began "
-        "only in June 2015 (no data for 2000-2014). Holdout evaluation contains only 3 danger events "
-        "(3 of 57 danger-alert episodes real in the test years) with an episode-level precision of 5.26% "
-        "and 33.7 false-alarm days/year. Scores must be interpreted with caution."
+        f"PROVISIONAL STATUS: Low sample reliability. Ground-truth CWC telemetry at Kidangoor began "
+        f"only in June 2015 (no data for 2000-2014). Holdout evaluation contains only {caught} danger events "
+        f"({caught} of {total_ep} danger-alert episodes real in the test years) with an episode-level precision of {ep_prec:.2f}% "
+        f"and {fa_days_yr:.1f} false-alarm days/year. Scores must be interpreted with caution."
     )
 
 
@@ -420,8 +413,8 @@ def compute_whatif_sensitivity(slug: str, extra_rain_mm: float) -> Dict[str, Any
         }
 
     # Determine runtime slider max = min(dataset daily max, training clip max for rain_1d)
-    clip_max_r1 = CLIP_RANGES["rain_1d"][1] # 152.6 mm
-    dataset_max_r1 = 152.6
+    clip_max_r1 = float(CLIP_RANGES["rain_1d"][1])
+    dataset_max_r1 = clip_max_r1
     if DATASET_PARQUET_PATH.exists():
         try:
             df = pd.read_parquet(DATASET_PARQUET_PATH)

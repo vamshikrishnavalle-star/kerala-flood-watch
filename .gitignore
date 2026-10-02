@@ -44,4 +44,6 @@ htmlcov/
 /models/
 !/models/scorer_v2.json
 !src/models/**
+**/__pycache__/
+src/models/__pycache__/
 scripts/strip_paths.py
