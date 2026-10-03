@@ -34,16 +34,26 @@ export const OperationsPage: React.FC<OperationsPageProps> = ({
   historyLogs,
 }) => {
   const selectedZone = zones.find((z) => z.slug === selectedZoneSlug) || zones[0];
-  const pred = predictions[selectedZoneSlug] || null;
+  const pred = selectedZone ? (predictions[selectedZone.slug] || null) : null;
 
   // Prepare data for the mini risk trajectory chart
   const basinHistory = historyLogs
-    .filter((h) => h.zone_slug === selectedZoneSlug && h.risk_score !== null)
+    .filter((h) => selectedZone && h.zone_slug === selectedZone.slug && h.risk_score !== null)
     .slice(-10)
     .map((h, i) => ({
       step: `T-${10 - i}`,
       score: h.risk_score,
     }));
+
+  if (!selectedZone || zones.length === 0) {
+    return (
+      <div className="flex h-64 flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-6 text-center text-slate-500">
+        <div className="h-7 w-7 animate-spin rounded-full border-2 border-sky-600 border-t-transparent" />
+        <p className="mt-3 font-semibold text-sm text-slate-700">Connecting to telemetry network...</p>
+        <p className="mt-1 text-xs text-slate-400">Initializing monitored Kerala river basins.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

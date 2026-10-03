@@ -8,9 +8,12 @@ import type {
   HistoryRecord,
 } from '../types/api.ts';
 
+const API_BASE_URL =
+  (import.meta as unknown as { env: Record<string, string> }).env?.VITE_API_BASE_URL || '/api';
+
 const client = axios.create({
-  baseURL: '/api',
-  timeout: 10000,
+  baseURL: API_BASE_URL,
+  timeout: 60000, // 60s to accommodate cloud cold starts
 });
 
 export const api = {

@@ -19,6 +19,7 @@ export const DetailOverview: React.FC<DetailOverviewProps> = ({
   prediction,
   currentTimeString = '14:45 IST',
 }) => {
+  if (!zone) return null;
   const isAlert = prediction?.alert_level === 'ALERT';
   const hasScore = prediction && prediction.risk_score !== null;
 

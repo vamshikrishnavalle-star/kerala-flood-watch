@@ -13,6 +13,7 @@ export const RegionalExtremes: React.FC<RegionalExtremesProps> = ({
   prediction,
   onLaunchSensitivity,
 }) => {
+  if (!zone) return null;
   const isAlert = prediction?.alert_level === 'ALERT';
 
   return (
