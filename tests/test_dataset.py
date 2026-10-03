@@ -4,9 +4,15 @@ import pytest
 
 DATASET_PATH = pathlib.Path("data/processed/dataset.parquet")
 
+# Skip the entire module when the parquet file is absent (e.g. in CI,
+# where the data/ directory is .gitignore-d and not checked in).
+pytestmark = pytest.mark.skipif(
+    not DATASET_PATH.exists(),
+    reason=f"{DATASET_PATH} not found – skipping dataset integrity tests",
+)
+
 @pytest.fixture(scope="module")
 def dataset():
-    assert DATASET_PATH.exists(), "dataset.parquet must exist"
     return pd.read_parquet(DATASET_PATH)
 
 def test_no_duplicate_zone_date(dataset):
